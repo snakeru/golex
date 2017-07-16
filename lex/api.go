@@ -199,7 +199,7 @@ func (l *Lexer) Abort() (int, bool) {
 func (l *Lexer) class() int { return l.classf(l.lookahead.Rune) }
 
 func (l *Lexer) defaultErrorf(pos token.Pos, msg string) {
-	l.Error(fmt.Sprintf("%v: %v", l.File.Position(pos), msg))
+	fmt.Fprintf(os.Stderr, "%v: %v\n", l.File.Position(pos), msg)
 }
 
 // Enter ensures the lexer has a valid lookahead Char and returns its class.
@@ -215,9 +215,9 @@ func (l *Lexer) Enter() int {
 	return l.class()
 }
 
-// Error Implements yyLexer[2] by printing the msg to stderr.
+// Error Implements yyLexer[2] by using the registered error handler (or a default one).
 func (l *Lexer) Error(msg string) {
-	fmt.Fprintf(os.Stderr, "%s\n", msg)
+	l.errorf(l.First.Pos(), msg)
 }
 
 // Lookahead returns the current lookahead.
